@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+getInfo()
+{
+    host=$(echo $1 | awk -F/ '{print $3}' | awk -F: '{print $1}')
+    jobName=$(echo $1 | awk -F/ '{print $5}')
+    runNode=$(curl -s -X GET "http://10.182.17.173:8080/job/${jobName}/config.xml" --user taowang:*WTxx201000* | grep assignedNode | sed 's/.*>\(.*\)<.*/\1/g')
+    echo $host $jobName $runNode >>~/collectJobInfo/jobInfo 
+    echo $host $jobName $runNode
+}
+
+for ur in $(curl -s -X GET "http://10.182.17.173:8080/api/xml" --user taowang:*WTxx201000* |  sed -e 's/</\n</g' -e 's/>/>\n/g' | grep http | egrep -v '8080/$')
+do
+    getInfo $ur
+    echo ------------------------------------------------------------------
+done
+
+
